@@ -79,13 +79,13 @@
     #clock-group {
       z-index:3;
       text-align:center;
-      max-width:94vw;
+      max-width:92vw;
     }
 
     #time {
       font-family:'Orbitron', monospace;
       font-weight:700;
-      font-size:24vw;
+      font-size:22vw;
       line-height:0.9;
       letter-spacing:-0.03em;
     }
@@ -114,7 +114,7 @@
       margin-top:10px;
       font-family:'Orbitron', monospace;
       font-weight:700;
-      font-size:22px;
+      font-size:20px;
       line-height:1.2;
       letter-spacing:1px;
       text-align:center;
@@ -141,7 +141,6 @@
       opacity:0.75;
     }
 
-    /* Día */
     body.day #time,
     body.day #date-text,
     body.day #temp-value {
@@ -154,7 +153,6 @@
       color:#426E88;
     }
 
-    /* Noche */
     body.night #time,
     body.night #date-text,
     body.night #temp-value {
@@ -167,7 +165,6 @@
       color:#193140;
     }
 
-    /* Descanso */
     .rest-mode #time,
     .rest-mode #date-text,
     .rest-mode #temp-value {
@@ -181,8 +178,8 @@
     }
 
     @media screen and (max-width:480px) {
-      #time { font-size:26vw; }
-      #date-text { font-size:18px; }
+      #time { font-size:23vw; }
+      #date-text { font-size:17px; }
       #temp-value { font-size:52px; }
       #seconds { font-size:16px; }
     }
@@ -258,7 +255,7 @@
       var url = 'https://api.open-meteo.com/v1/forecast' +
         '?latitude=' + LAT +
         '&longitude=' + LON +
-        '&current=temperature_2m,weathercode' +
+        '&current=temperature_2m' +
         '&timezone=America%2FMexico_City' +
         '&forecast_days=1';
 
@@ -302,34 +299,40 @@
     updateRestMode();
     setInterval(updateRestMode, 60000);
 
-    /* ZONAS SEGURAS */
-    var clockZones = [
-      { cx:50, cy:24 },
-      { cx:50, cy:34 },
-      { cx:50, cy:46 },
-      { cx:50, cy:58 },
-      { cx:38, cy:34 },
-      { cx:62, cy:34 },
-      { cx:38, cy:50 },
-      { cx:62, cy:50 }
-    ];
-
-    var tempZones = [
-      { cx:18, cy:18 },
-      { cx:82, cy:18 },
-      { cx:18, cy:80 },
-      { cx:82, cy:80 },
-      { cx:20, cy:52 },
-      { cx:80, cy:52 },
-      { cx:50, cy:80 }
-    ];
+    /* =========================
+       MOVIMIENTO CON MÁRGENES SEGUROS
+       ========================= */
 
     var lastClockZone = -1;
     var lastTempZone = -1;
 
-    function setElementPosition(el, cx, cy) {
+    /* Hora+fecha: solo zona central segura */
+    var clockZones = [
+      { cx:50, cy:28 },
+      { cx:50, cy:38 },
+      { cx:50, cy:48 },
+      { cx:42, cy:34 },
+      { cx:58, cy:34 },
+      { cx:42, cy:46 },
+      { cx:58, cy:46 }
+    ];
+
+    /* Temperatura: laterales y parte baja/alta, sin centro */
+    var tempZones = [
+      { cx:16, cy:18 },
+      { cx:84, cy:18 },
+      { cx:16, cy:50 },
+      { cx:84, cy:50 },
+      { cx:18, cy:80 },
+      { cx:82, cy:80 },
+      { cx:50, cy:82 }
+    ];
+
+    function setCenteredPosition(el, cx, cy) {
       el.style.left = cx + '%';
       el.style.top = cy + '%';
+      el.style.webkitTransform = 'translate(-50%,-50%)';
+      el.style.transform = 'translate(-50%,-50%)';
     }
 
     function getRandomIndex(length, exclude) {
@@ -341,46 +344,88 @@
       return idx;
     }
 
-    function moveElements() {
+    function rectsOverlap(a, b, padding) {
+      return !(
+        a.right + padding < b.left ||
+        a.left > b.right + padding ||
+        a.bottom + padding < b.top ||
+        a.top > b.bottom + padding
+      );
+    }
+
+    function insideSafeMargins(rect, marginX, marginY) {
+      var vw = window.innerWidth;
+      var vh = window.innerHeight;
+
+      return (
+        rect.left >= marginX &&
+        rect.right <= (vw - marginX) &&
+        rect.top >= marginY &&
+        rect.bottom <= (vh - marginY)
+      );
+    }
+
+    function tryPlaceElements() {
       var clock = document.getElementById('clock-group');
       var temp = document.getElementById('temp-wrap');
 
-      var zClock = getRandomIndex(clockZones.length, lastClockZone);
-      var zTemp = getRandomIndex(tempZones.length, lastTempZone);
+      var tries = 0;
+      var ok = false;
 
-      lastClockZone = zClock;
-      lastTempZone = zTemp;
+      while (tries < 30 && !ok) {
+        var zClock = getRandomIndex(clockZones.length, lastClockZone);
+        var zTemp = getRandomIndex(tempZones.length, lastTempZone);
 
-      var c = clockZones[zClock];
-      var t = tempZones[zTemp];
+        var c = clockZones[zClock];
+        var t = tempZones[zTemp];
 
-      var cjx = randomInt(-4, 4);
-      var cjy = randomInt(-3, 3);
-      var tjx = randomInt(-4, 4);
-      var tjy = randomInt(-3, 3);
+        /* jitter pequeño, pero controlado */
+        var cjx = randomInt(-2, 2);
+        var cjy = randomInt(-2, 2);
+        var tjx = randomInt(-2, 2);
+        var tjy = randomInt(-2, 2);
 
-      setElementPosition(clock, c.cx + cjx, c.cy + cjy);
-      setElementPosition(temp, t.cx + tjx, t.cy + tjy);
+        setCenteredPosition(clock, c.cx + cjx, c.cy + cjy);
+        setCenteredPosition(temp, t.cx + tjx, t.cy + tjy);
 
-      clock.style.webkitTransform = 'translate(-50%,-50%)';
-      clock.style.transform = 'translate(-50%,-50%)';
+        var clockRect = clock.getBoundingClientRect();
+        var tempRect = temp.getBoundingClientRect();
 
-      temp.style.webkitTransform = 'translate(-50%,-50%)';
-      temp.style.transform = 'translate(-50%,-50%)';
+        var clockInside = insideSafeMargins(clockRect, 16, 20);
+        var tempInside = insideSafeMargins(tempRect, 16, 20);
+        var noOverlap = !rectsOverlap(clockRect, tempRect, 18);
+
+        if (clockInside && tempInside && noOverlap) {
+          lastClockZone = zClock;
+          lastTempZone = zTemp;
+          ok = true;
+        }
+
+        tries++;
+      }
+
+      /* Fallback muy seguro */
+      if (!ok) {
+        setCenteredPosition(clock, 50, 38);
+        setCenteredPosition(temp, 82, 80);
+        lastClockZone = 1;
+        lastTempZone = 5;
+      }
     }
 
-    moveElements();
+    tryPlaceElements();
 
     function scheduleNextMove() {
       var nextMs = randomInt(120000, 240000);
       setTimeout(function() {
-        moveElements();
+        tryPlaceElements();
         scheduleNextMove();
       }, nextMs);
     }
 
     scheduleNextMove();
 
+    /* Microajuste mínimo */
     function nudgeElements() {
       var clock = document.getElementById('clock-group');
       var temp = document.getElementById('temp-wrap');
