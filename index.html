@@ -2,9 +2,9 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>CASIO</title>
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
@@ -25,6 +25,17 @@
   <style>
     * { margin:0; padding:0; -webkit-box-sizing:border-box; box-sizing:border-box; }
     html, body { width:100%; height:100%; overflow:hidden; }
+    html {
+      /* Cubre el status bar residual en Android fullscreen */
+      padding-top: constant(safe-area-inset-top);
+      padding-top: env(safe-area-inset-top);
+      padding-right: constant(safe-area-inset-right);
+      padding-right: env(safe-area-inset-right);
+      padding-bottom: constant(safe-area-inset-bottom);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left: constant(safe-area-inset-left);
+      padding-left: env(safe-area-inset-left);
+    }
     body {
       display:-webkit-box; display:-webkit-flex; display:flex;
       -webkit-box-align:center; -webkit-align-items:center; align-items:center;
