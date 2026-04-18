@@ -6,6 +6,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <title>CASIO</title>
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#070C12">
+  <meta name="mobile-web-app-capable" content="yes">
+  <!-- iOS icons -->
+  <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png">
   <!--
     Compatibilidad: iPad 2 (A5) · iOS 9.3.5 · Safari 9
     - Sin CSS custom properties (var())
@@ -385,6 +392,11 @@
   }
   loadWeather();
   setInterval(loadWeather, 600000);
+
+  /* ── SERVICE WORKER (PWA) ── */
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(function() {});
+  }
 </script>
 </body>
 </html>
