@@ -6,137 +6,211 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <title>CASIO</title>
+  <!--
+    Compatibilidad: iPad 2 (A5) · iOS 9.3.5 · Safari 9
+    - Sin CSS custom properties (var())
+    - Flexbox con prefijos -webkit-
+    - Sin fetch(), usa XMLHttpRequest
+    - Orbitron via Google Fonts (compatible Safari 9)
+    - JS ES5 puro
+  -->
+  <link href="https://fonts.googleapis.com/css?family=Orbitron:400,700,900|Share+Tech+Mono" rel="stylesheet">
   <style>
-    @font-face {
-      font-family: 'DSEG7';
-      src: url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG7-Classic/DSEG7Classic-Regular.woff2') format('woff2');
-    }
-  </style>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <style>
-    /* ── CSS VARIABLES POR TEMA ── */
-    :root {
-      --bg-body:    #0A0A08;
-      --bg-watch:   #141F0C;
-      --border:     #3A5220;
-      --border-dim: #1E2E10;
-      --fg-bright:  #B8D870;
-      --fg-mid:     #527030;
-      --fg-dim:     #4A6228;
-      --ghost:      #1E2E10;
-    }
-    body.theme-blue {
-      --bg-body:    #080810;
-      --bg-watch:   #0C0C20;
-      --border:     #203A52;
-      --border-dim: #101E2E;
-      --fg-bright:  #70B8D8;
-      --fg-mid:     #305270;
-      --fg-dim:     #284A62;
-      --ghost:      #101E2E;
-    }
-    body.theme-mono {
-      --bg-body:    #080808;
-      --bg-watch:   #111111;
-      --border:     #444444;
-      --border-dim: #222222;
-      --fg-bright:  #EEEEEE;
-      --fg-mid:     #777777;
-      --fg-dim:     #555555;
-      --ghost:      #1E1E1E;
+    * { margin:0; padding:0; -webkit-box-sizing:border-box; box-sizing:border-box; }
+    html, body { width:100%; height:100%; overflow:hidden; }
+    body {
+      display:-webkit-box; display:-webkit-flex; display:flex;
+      -webkit-box-align:center; -webkit-align-items:center; align-items:center;
+      -webkit-box-pack:center;  -webkit-justify-content:center; justify-content:center;
+      font-family:'Share Tech Mono', monospace;
+      -webkit-transition: background 1s; transition: background 1s;
     }
 
-    * { margin:0; padding:0; box-sizing:border-box; }
-    html, body { width:100%; height:100%; overflow:hidden; background:var(--bg-body); transition: background 0.3s; }
-    body { display:flex; align-items:center; justify-content:center; font-family:'Share Tech Mono', monospace; }
+    /* ══ TEMA DÍA (07:00–19:59) ══ */
+    body.day  { background:#0D1117; }
+    body.day .watch {
+      background:#111820; border:2px solid #1E3A5F;
+      -webkit-box-shadow: 0 0 40px rgba(0,160,255,0.15), inset 0 0 60px rgba(0,0,0,0.4);
+              box-shadow: 0 0 40px rgba(0,160,255,0.15), inset 0 0 60px rgba(0,0,0,0.4);
+    }
+    body.day .header        { border-bottom:1px solid #1A2E44; color:#4A8AB0; }
+    body.day .modes button  { border:1px solid #1A2E44; color:#3A6A88; }
+    body.day .modes button.active { color:#7DD4FF; border-color:#7DD4FF; }
+    body.day .lcd           { color:#7DD4FF; text-shadow:0 0 30px rgba(125,212,255,0.9),0 0 60px rgba(125,212,255,0.4); }
+    body.day .time-block    { border-bottom:1px solid #1A2E44; }
+    body.day .panel         { border-right:1px solid #1A2E44; }
+    body.day .panel-label   { color:#4A8AB0; border-bottom:1px solid #1A2E44; }
+    body.day .temp          { color:#7DD4FF; text-shadow:0 0 20px rgba(125,212,255,0.6); }
+    body.day .weather-item  { color:#4A8AB0; }
+    body.day .msg           { color:#2A5070; }
+    body.day .err           { color:#A04030; }
+    body.day .date-display  { color:#7DD4FF; }
+    body.day .festivo-item  { border-left:2px solid #2A5070; }
+    body.day .festivo-fecha  { color:#4A8AB0; }
+    body.day .festivo-nombre { color:#7DD4FF; }
+    body.day .festivo-dias   { color:#2A5070; }
+    body.day .night-dot      { background:#7DD4FF; }
+    body.day .seconds-display { color:#4A8AB0; }
 
+    /* ══ TEMA NOCHE (20:00–06:59) ══ */
+    body.night { background:#04060A; }
+    body.night .watch {
+      background:#070C12; border:2px solid #0E2235;
+      -webkit-box-shadow: 0 0 15px rgba(0,80,140,0.08), inset 0 0 60px rgba(0,0,0,0.7);
+              box-shadow: 0 0 15px rgba(0,80,140,0.08), inset 0 0 60px rgba(0,0,0,0.7);
+    }
+    body.night .header        { border-bottom:1px solid #0C1C2C; color:#224058; }
+    body.night .modes button  { border:1px solid #0C1C2C; color:#1A3448; }
+    body.night .modes button.active { color:#3A7AAA; border-color:#3A7AAA; }
+    body.night .lcd           { color:#2E6088; text-shadow:0 0 18px rgba(46,96,136,0.4); }
+    body.night .time-block    { border-bottom:1px solid #0C1C2C; }
+    body.night .panel         { border-right:1px solid #0C1C2C; }
+    body.night .panel-label   { color:#1E3A50; border-bottom:1px solid #0C1C2C; }
+    body.night .temp          { color:#2E6088; text-shadow:0 0 10px rgba(46,96,136,0.2); }
+    body.night .weather-item  { color:#1E3A50; }
+    body.night .msg           { color:#122030; }
+    body.night .err           { color:#5A2018; }
+    body.night .date-display  { color:#2E6088; }
+    body.night .festivo-item  { border-left:2px solid #122030; }
+    body.night .festivo-fecha  { color:#1E3A50; }
+    body.night .festivo-nombre { color:#2E6088; }
+    body.night .festivo-dias   { color:#122030; }
+    body.night .night-dot      { background:#2E6088; }
+    body.night .seconds-display { color:#1E3A50; }
+
+    /* ══ ESTRUCTURA ══ */
     .watch {
-      width:92vw; height:88vh;
-      border:3px solid var(--border); border-radius:8px;
-      background:var(--bg-watch); position:relative; display:flex; flex-direction:column; overflow:hidden;
-      transition: background 0.3s, border-color 0.3s;
+      width:92vw; height:88vh; border-radius:10px; position:relative;
+      display:-webkit-box; display:-webkit-flex; display:flex;
+      -webkit-box-orient:vertical; -webkit-flex-direction:column; flex-direction:column;
+      overflow:hidden;
+      -webkit-transition: background 1s, border-color 1s; transition: background 1s, border-color 1s;
     }
     .header {
-      padding:8px 20px; display:flex; justify-content:space-between; align-items:center;
-      border-bottom:1px solid var(--border-dim); color:var(--fg-mid); font-size:14px; letter-spacing:2px;
+      padding:8px 18px;
+      display:-webkit-box; display:-webkit-flex; display:flex;
+      -webkit-box-pack:justify; -webkit-justify-content:space-between; justify-content:space-between;
+      -webkit-box-align:center; -webkit-align-items:center; align-items:center;
+      font-size:12px; letter-spacing:2px;
+      -webkit-transition: border-color 1s, color 1s; transition: border-color 1s, color 1s;
     }
     .modes button {
-      background:none; border:1px solid var(--border-dim); color:var(--fg-dim);
-      padding:4px 10px; margin-left:6px; font-size:12px; cursor:pointer;
-      font-family:'Share Tech Mono', monospace; transition: color 0.2s, border-color 0.2s;
+      background:none; padding:4px 10px; margin-left:5px;
+      font-size:11px; cursor:pointer; letter-spacing:1px;
+      font-family:'Share Tech Mono', monospace;
+      -webkit-appearance:none; border-radius:3px;
+      -webkit-transition: color 0.3s, border-color 0.3s; transition: color 0.3s, border-color 0.3s;
     }
-    .modes button.active { color:var(--fg-bright); border-color:var(--fg-bright); }
+    .night-dot {
+      display:inline-block; width:6px; height:6px; border-radius:50%;
+      margin-right:6px; vertical-align:middle;
+      -webkit-animation: pulse 2s infinite; animation: pulse 2s infinite;
+      -webkit-transition: background 1s; transition: background 1s;
+    }
+    @-webkit-keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
+    @keyframes          pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+    .seconds-display {
+      font-family:'Orbitron', monospace; font-weight:700;
+      font-size:15px; letter-spacing:3px;
+      -webkit-transition: color 1s; transition: color 1s;
+    }
 
     .time-block {
-      flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
-      border-bottom:1px solid var(--border-dim);
-    }
-    .lcd-wrapper { position:relative; display:inline-block; }
-    .ghost {
-      font-family:'DSEG7', monospace;
-      font-size:18vw; letter-spacing:4px; color:var(--ghost);
-      position:absolute; top:0; left:0; user-select:none; pointer-events:none;
+      -webkit-box-flex:1; -webkit-flex:1; flex:1;
+      display:-webkit-box; display:-webkit-flex; display:flex;
+      -webkit-box-orient:vertical; -webkit-flex-direction:column; flex-direction:column;
+      -webkit-box-align:center; -webkit-align-items:center; align-items:center;
+      -webkit-box-pack:center;  -webkit-justify-content:center; justify-content:center;
+      -webkit-transition: border-color 1s; transition: border-color 1s;
     }
     .lcd {
-      font-family:'DSEG7', monospace;
-      font-size:18vw; letter-spacing:4px; color:var(--fg-bright);
-      text-shadow:0 0 20px rgba(184,216,112,0.5);
-      position:relative; z-index:1;
-      transition: color 0.3s, text-shadow 0.3s;
+      font-family:'Orbitron', monospace; font-weight:900;
+      font-size:19vw; letter-spacing:-1px; line-height:1;
+      -webkit-transition: color 1s, text-shadow 1s; transition: color 1s, text-shadow 1s;
     }
-    .sep { animation: blink 1s infinite; }
-    @keyframes blink { 50% { opacity: 0.2; } }
+    .sep {
+      -webkit-animation: blink 1s infinite; animation: blink 1s infinite;
+      display:inline-block;
+    }
+    @-webkit-keyframes blink { 50%{opacity:0.12} }
+    @keyframes          blink { 50%{opacity:0.12} }
 
-    .bottom { display:flex; flex:1; min-height:0; }
+    .bottom {
+      display:-webkit-box; display:-webkit-flex; display:flex;
+      -webkit-box-flex:1; -webkit-flex:1; flex:1;
+      min-height:0;
+    }
     .panel {
-      flex:1; padding:15px 25px; border-right:1px solid var(--border-dim); overflow:hidden;
+      -webkit-box-flex:1; -webkit-flex:1; flex:1;
+      padding:14px 22px; overflow:hidden;
+      -webkit-transition: border-color 1s; transition: border-color 1s;
     }
-    .panel:last-child { border-right:none; }
+    .panel:last-child { border-right:none !important; }
     .panel-label {
-      font-size:13px; letter-spacing:2px; color:var(--fg-mid);
-      margin-bottom:8px; border-bottom:1px solid var(--border-dim); padding-bottom:4px;
+      font-size:12px; letter-spacing:2px; margin-bottom:8px; padding-bottom:4px;
+      font-family:'Share Tech Mono', monospace;
+      -webkit-transition: color 1s, border-color 1s; transition: color 1s, border-color 1s;
     }
-    .temp {
-      font-family:'DSEG7', monospace; font-size:72px; color:var(--fg-bright); line-height:1;
-      transition: color 0.3s;
-    }
-    .msg { color:var(--fg-dim); font-size:14px; letter-spacing:1px; line-height:1.8; }
-    .weather-row { margin-top:8px; }
-    .weather-item { color:var(--fg-mid); font-size:13px; letter-spacing:1px; }
-    .err { color:#7A3020; font-size:13px; letter-spacing:1px; }
 
-    /* Fecha grande */
+    /* Clima */
+    .temp {
+      font-family:'Orbitron', monospace; font-weight:700; font-size:60px; line-height:1;
+      -webkit-transition: color 1s, text-shadow 1s; transition: color 1s, text-shadow 1s;
+    }
+    .weather-row { margin-top:8px; }
+    .weather-item {
+      font-size:12px; letter-spacing:1px; line-height:1.7;
+      font-family:'Share Tech Mono', monospace;
+      -webkit-transition: color 1s; transition: color 1s;
+    }
+    .msg {
+      font-size:13px; letter-spacing:1px; line-height:1.8;
+      font-family:'Share Tech Mono', monospace;
+      -webkit-transition: color 1s; transition: color 1s;
+    }
+    .err { font-size:12px; letter-spacing:1px; font-family:'Share Tech Mono', monospace; }
+
+    /* Festivos */
     .date-display {
-      font-size:26px; color:var(--fg-bright); letter-spacing:3px; margin-bottom:14px;
+      font-family:'Orbitron', monospace; font-weight:700;
+      font-size:14px; letter-spacing:2px; margin-bottom:14px;
+      -webkit-transition: color 1s; transition: color 1s;
     }
-    /* Días festivos */
     .festivo-item {
-      border-left: 2px solid var(--fg-dim);
-      padding: 4px 0 4px 10px;
-      margin-bottom: 10px;
+      padding:4px 0 4px 10px; margin-bottom:10px;
+      -webkit-transition: border-color 1s; transition: border-color 1s;
     }
-    .festivo-fecha { color:var(--fg-mid); font-size:12px; letter-spacing:1px; }
-    .festivo-nombre { color:var(--fg-bright); font-size:13px; letter-spacing:1px; line-height:1.4; }
-    .festivo-dias { color:var(--fg-dim); font-size:11px; letter-spacing:1px; margin-top:1px; }
+    .festivo-fecha {
+      font-size:11px; letter-spacing:1px; font-family:'Share Tech Mono', monospace;
+      -webkit-transition: color 1s; transition: color 1s;
+    }
+    .festivo-nombre {
+      font-family:'Orbitron', monospace; font-weight:700; font-size:12px;
+      letter-spacing:1px; line-height:1.4;
+      -webkit-transition: color 1s; transition: color 1s;
+    }
+    .festivo-dias {
+      font-size:11px; letter-spacing:1px; font-family:'Share Tech Mono', monospace;
+      margin-top:1px; -webkit-transition: color 1s; transition: color 1s;
+    }
   </style>
 </head>
-<body class="theme-green">
+<body class="day">
 <div class="watch">
+
   <div class="header">
-    <div>● CASIO · WORLD TIME</div>
-    <div id="seconds">00</div>
+    <div><span class="night-dot"></span>CASIO · WORLD TIME</div>
+    <div class="seconds-display" id="seconds">00</div>
     <div class="modes">
-      <button onclick="setTheme('green')" id="btn-green" class="active">GRN</button>
-      <button onclick="setTheme('blue')"  id="btn-blue">BLU</button>
-      <button onclick="setTheme('mono')"  id="btn-mono">B&W</button>
+      <button id="btn-day"   onclick="forceMode('day')">DÍA</button>
+      <button id="btn-night" onclick="forceMode('night')">NOCHE</button>
+      <button id="btn-auto"  onclick="forceMode('auto')" class="active">AUTO</button>
     </div>
   </div>
 
   <div class="time-block">
-    <div class="lcd-wrapper">
-      <div class="ghost">88:88</div>
-      <div class="lcd" id="time">00:00</div>
-    </div>
+    <div class="lcd" id="time">00<span class="sep">:</span>00</div>
   </div>
 
   <div class="bottom">
@@ -149,16 +223,40 @@
       <div id="festivos"></div>
     </div>
   </div>
+
 </div>
 
 <script>
   /* ── CONSTANTES ── */
-  var LAT = 19.0414;
-  var LON = -98.2063;
+  var LAT   = 19.0414;
+  var LON   = -98.2063;
   var DIAS  = ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
   var MESES = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
-
   function pad(n) { return n < 10 ? '0' + n : n; }
+
+  /* ── MODO DÍA / NOCHE ── */
+  var modeOverride = 'auto';
+
+  function applyMode(m) {
+    document.body.className = m;
+  }
+  function checkMode() {
+    if (modeOverride !== 'auto') { applyMode(modeOverride); return; }
+    var h = new Date().getHours();
+    applyMode((h >= 20 || h < 7) ? 'night' : 'day');
+  }
+  function forceMode(m) {
+    modeOverride = m;
+    var btns = document.getElementsByTagName('button');
+    for (var i=0; i<btns.length; i++) {
+      btns[i].className = btns[i].className.replace(/\bactive\b/,'').trim();
+    }
+    var btn = document.getElementById('btn-' + m);
+    if (btn) btn.className = (btn.className + ' active').trim();
+    checkMode();
+  }
+  checkMode();
+  setInterval(checkMode, 30000);
 
   /* ── RELOJ ── */
   function updateClock() {
@@ -170,150 +268,122 @@
   updateClock();
   setInterval(updateClock, 1000);
 
-  /* ── DÍAS FESTIVOS MÉXICO 2026-2027 (oficiales + SEP) ── */
+  /* ── FESTIVOS MÉXICO 2026-2027 ── */
   var FESTIVOS = [
-    // 2026
-    { fecha: '2026-01-01', nombre: 'AÑO NUEVO' },
-    { fecha: '2026-02-02', nombre: 'DÍA DE LA CANDELARIA' },
-    { fecha: '2026-02-05', nombre: 'DÍA DE LA CONSTITUCIÓN' },
-    { fecha: '2026-03-16', nombre: 'NATALICIO DE BENITO JUÁREZ' },
-    { fecha: '2026-04-02', nombre: 'JUEVES SANTO' },
-    { fecha: '2026-04-03', nombre: 'VIERNES SANTO' },
-    { fecha: '2026-05-01', nombre: 'DÍA DEL TRABAJO' },
-    { fecha: '2026-05-10', nombre: 'DÍA DE LAS MADRES' },
-    { fecha: '2026-09-16', nombre: 'DÍA DE LA INDEPENDENCIA' },
-    { fecha: '2026-11-02', nombre: 'DÍA DE MUERTOS' },
-    { fecha: '2026-11-16', nombre: 'REVOLUCIÓN MEXICANA' },
-    { fecha: '2026-12-12', nombre: 'DÍA DE LA VIRGEN DE GUADALUPE' },
-    { fecha: '2026-12-25', nombre: 'NAVIDAD' },
-    // 2027
-    { fecha: '2027-01-01', nombre: 'AÑO NUEVO' },
-    { fecha: '2027-02-05', nombre: 'DÍA DE LA CONSTITUCIÓN' },
-    { fecha: '2027-03-21', nombre: 'NATALICIO DE BENITO JUÁREZ' },
-    { fecha: '2027-03-25', nombre: 'JUEVES SANTO' },
-    { fecha: '2027-03-26', nombre: 'VIERNES SANTO' },
-    { fecha: '2027-05-01', nombre: 'DÍA DEL TRABAJO' },
-    { fecha: '2027-05-10', nombre: 'DÍA DE LAS MADRES' },
-    { fecha: '2027-09-16', nombre: 'DÍA DE LA INDEPENDENCIA' },
-    { fecha: '2027-11-02', nombre: 'DÍA DE MUERTOS' },
-    { fecha: '2027-11-15', nombre: 'REVOLUCIÓN MEXICANA' },
-    { fecha: '2027-12-12', nombre: 'DÍA DE LA VIRGEN DE GUADALUPE' },
-    { fecha: '2027-12-25', nombre: 'NAVIDAD' }
+    {fecha:'2026-01-01',nombre:'AÑO NUEVO'},
+    {fecha:'2026-02-02',nombre:'DÍA DE LA CANDELARIA'},
+    {fecha:'2026-02-05',nombre:'DÍA DE LA CONSTITUCIÓN'},
+    {fecha:'2026-03-16',nombre:'NATALICIO DE BENITO JUÁREZ'},
+    {fecha:'2026-04-02',nombre:'JUEVES SANTO'},
+    {fecha:'2026-04-03',nombre:'VIERNES SANTO'},
+    {fecha:'2026-05-01',nombre:'DÍA DEL TRABAJO'},
+    {fecha:'2026-05-10',nombre:'DÍA DE LAS MADRES'},
+    {fecha:'2026-09-16',nombre:'DÍA DE LA INDEPENDENCIA'},
+    {fecha:'2026-11-02',nombre:'DÍA DE MUERTOS'},
+    {fecha:'2026-11-16',nombre:'REVOLUCIÓN MEXICANA'},
+    {fecha:'2026-12-12',nombre:'VIRGEN DE GUADALUPE'},
+    {fecha:'2026-12-25',nombre:'NAVIDAD'},
+    {fecha:'2027-01-01',nombre:'AÑO NUEVO'},
+    {fecha:'2027-02-05',nombre:'DÍA DE LA CONSTITUCIÓN'},
+    {fecha:'2027-03-21',nombre:'NATALICIO DE BENITO JUÁREZ'},
+    {fecha:'2027-03-25',nombre:'JUEVES SANTO'},
+    {fecha:'2027-03-26',nombre:'VIERNES SANTO'},
+    {fecha:'2027-05-01',nombre:'DÍA DEL TRABAJO'},
+    {fecha:'2027-05-10',nombre:'DÍA DE LAS MADRES'},
+    {fecha:'2027-09-16',nombre:'DÍA DE LA INDEPENDENCIA'},
+    {fecha:'2027-11-02',nombre:'DÍA DE MUERTOS'},
+    {fecha:'2027-11-15',nombre:'REVOLUCIÓN MEXICANA'},
+    {fecha:'2027-12-12',nombre:'VIRGEN DE GUADALUPE'},
+    {fecha:'2027-12-25',nombre:'NAVIDAD'}
   ];
 
   function renderFestivos() {
-    var now   = new Date();
-    var hoy   = now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate());
-    var diaHoy = DIAS[now.getDay()];
-    var mesHoy = MESES[now.getMonth()];
-
-    // Fecha actual grande
+    var now  = new Date();
+    var hoy  = now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate());
     var html = '<div class="date-display">' +
-      diaHoy + ' ' + pad(now.getDate()) + '-' + mesHoy + '-' + now.getFullYear() +
-      '</div>';
-
-    // Próximos 3 festivos desde hoy (inclusive si hoy es festivo)
-    var proximos = FESTIVOS.filter(function(f){ return f.fecha >= hoy; }).slice(0, 3);
-
-    proximos.forEach(function(f) {
-      var parts = f.fecha.split('-');
-      var fd = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
-      var diffMs   = fd - new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      var diffDias = Math.round(diffMs / 86400000);
-      var etiqueta = diffDias === 0 ? '¡HOY!' :
-                     diffDias === 1 ? 'MAÑANA' :
-                     'EN ' + diffDias + ' DÍAS';
-      var diaFest  = DIAS[fd.getDay()];
-      var mesFest  = MESES[fd.getMonth()];
-
+      DIAS[now.getDay()] + '  ' + pad(now.getDate()) + ' ' +
+      MESES[now.getMonth()] + ' ' + now.getFullYear() +
+    '</div>';
+    var count = 0;
+    for (var i=0; i<FESTIVOS.length && count<3; i++) {
+      if (FESTIVOS[i].fecha < hoy) continue;
+      var f     = FESTIVOS[i];
+      var p     = f.fecha.split('-');
+      var fd    = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2]));
+      var hoyD  = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      var diff  = Math.round((fd - hoyD) / 86400000);
+      var etiq  = diff===0 ? '— HOY —' : diff===1 ? 'MAÑANA' : 'EN ' + diff + ' DÍAS';
       html += '<div class="festivo-item">' +
-        '<div class="festivo-fecha">' + diaFest + ' ' + pad(fd.getDate()) + '-' + mesFest + '-' + fd.getFullYear() + '</div>' +
+        '<div class="festivo-fecha">' + DIAS[fd.getDay()] + '  ' + pad(fd.getDate()) + ' ' + MESES[fd.getMonth()] + ' ' + fd.getFullYear() + '</div>' +
         '<div class="festivo-nombre">' + f.nombre + '</div>' +
-        '<div class="festivo-dias">' + etiqueta + '</div>' +
-        '</div>';
-    });
-
+        '<div class="festivo-dias">' + etiq + '</div>' +
+      '</div>';
+      count++;
+    }
     document.getElementById('festivos').innerHTML = html;
   }
-
   renderFestivos();
-  // Actualizar al cambiar de día (medianoche)
   setInterval(renderFestivos, 60000);
 
-  /* ── TEMAS ── */
-  function setTheme(theme) {
-    document.querySelectorAll('.modes button').forEach(function(b){ b.classList.remove('active'); });
-    document.getElementById('btn-' + theme).classList.add('active');
-    document.body.className = 'theme-' + theme;
-  }
-
-  /* ── CLIMA (Open-Meteo, sin API key) ── */
+  /* ── CLIMA — XMLHttpRequest (sin fetch, compatible iOS 9) ── */
   var WMO = {
-    0:'DESPEJADO', 1:'CASI DESPEJADO', 2:'PARCIALMENTE NUBLADO', 3:'NUBLADO',
-    45:'NEBLINA', 48:'NEBLINA CON HIELO',
-    51:'LLOVIZNA LIGERA', 53:'LLOVIZNA', 55:'LLOVIZNA INTENSA',
-    61:'LLUVIA LIGERA', 63:'LLUVIA', 65:'LLUVIA INTENSA',
-    71:'NIEVE LIGERA', 73:'NIEVE', 75:'NIEVE INTENSA',
-    80:'CHUBASCOS', 81:'CHUBASCOS FUERTES', 82:'CHUBASCOS VIOLENTOS',
-    95:'TORMENTA', 96:'TORMENTA CON GRANIZO', 99:'TORMENTA FUERTE'
+    0:'DESPEJADO',1:'CASI DESPEJADO',2:'PARCIAL. NUBLADO',3:'NUBLADO',
+    45:'NEBLINA',48:'NEBLINA C/HIELO',
+    51:'LLOVIZNA LIGERA',53:'LLOVIZNA',55:'LLOVIZNA INTENSA',
+    61:'LLUVIA LIGERA',63:'LLUVIA',65:'LLUVIA INTENSA',
+    71:'NIEVE LIGERA',73:'NIEVE',75:'NIEVE INTENSA',
+    80:'CHUBASCOS',81:'CHUBASCOS FUERTES',82:'CHUBASCOS VIOLENTOS',
+    95:'TORMENTA',96:'TORMENTA C/GRANIZO',99:'TORMENTA FUERTE'
   };
 
   function loadWeather() {
     var url = 'https://api.open-meteo.com/v1/forecast' +
-      '?latitude=' + LAT +
-      '&longitude=' + LON +
+      '?latitude='  + LAT + '&longitude=' + LON +
       '&current=temperature_2m,apparent_temperature,weathercode,windspeed_10m,relative_humidity_2m' +
       '&daily=temperature_2m_max,temperature_2m_min,weathercode' +
-      '&timezone=America%2FMexico_City' +
-      '&forecast_days=3';
-
-    fetch(url)
-      .then(function(r){
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.json();
-      })
-      .then(function(data){
-        var c = data.current;
-        var d = data.daily;
-        var code = c.weathercode;
-        var desc = WMO[code] || 'COD:' + code;
-
+      '&timezone=America%2FMexico_City&forecast_days=3';
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState !== 4) return;
+      if (xhr.status !== 200) {
+        document.getElementById('weather').innerHTML =
+          '<div class="err">ERROR HTTP ' + xhr.status + '</div><div class="msg" style="margin-top:6px;">REINTENTANDO...</div>';
+        setTimeout(loadWeather, 30000); return;
+      }
+      try {
+        var data = JSON.parse(xhr.responseText);
+        var c = data.current; var d = data.daily;
+        var desc = WMO[c.weathercode] || 'COD:'+c.weathercode;
         var html = '<div class="temp">' + Math.round(c.temperature_2m) + '°</div>';
         html += '<div class="weather-row">';
-        html += '<div class="weather-item">ST: ' + Math.round(c.apparent_temperature) + '°C  HUM: ' + c.relative_humidity_2m + '%</div>';
-        html += '<div class="weather-item">VIENTO: ' + Math.round(c.windspeed_10m) + ' KM/H</div>';
-        html += '<div class="weather-item">' + desc + '</div>';
-        html += '</div>';
-
-        // Pronóstico 3 días
+        html += '<div class="weather-item">ST ' + Math.round(c.apparent_temperature) + '°  HUM ' + c.relative_humidity_2m + '%</div>';
+        html += '<div class="weather-item">VIENTO ' + Math.round(c.windspeed_10m) + ' KM/H</div>';
+        html += '<div class="weather-item">' + desc + '</div></div>';
         if (d && d.time) {
           html += '<div style="margin-top:10px;">';
-          for (var i = 0; i < Math.min(3, d.time.length); i++) {
+          var n = d.time.length < 3 ? d.time.length : 3;
+          for (var i=0; i<n; i++) {
             var dt = new Date(d.time[i] + 'T12:00:00');
-            var dia = DIAS[dt.getDay()];
-            var wc  = WMO[d.weathercode[i]] || '';
-            html += '<div class="weather-item">' +
-              dia + ' ' +
-              Math.round(d.temperature_2m_min[i]) + '/' +
-              Math.round(d.temperature_2m_max[i]) + '°  ' +
-              wc.substring(0,14) +
-              '</div>';
+            html += '<div class="weather-item">' + DIAS[dt.getDay()] + ' ' +
+              Math.round(d.temperature_2m_min[i]) + '/' + Math.round(d.temperature_2m_max[i]) + '°  ' +
+              (WMO[d.weathercode[i]]||'').substring(0,16) + '</div>';
           }
           html += '</div>';
         }
-
         document.getElementById('weather').innerHTML = html;
-      })
-      .catch(function(err){
-        document.getElementById('weather').innerHTML =
-          '<div class="err">ERROR: ' + err.message + '</div>' +
-          '<div class="msg" style="margin-top:6px;">REINTENTANDO...</div>';
-        setTimeout(loadWeather, 30000);
-      });
+      } catch(e) {
+        document.getElementById('weather').innerHTML = '<div class="err">ERROR DE DATOS</div>';
+      }
+    };
+    xhr.onerror = function() {
+      document.getElementById('weather').innerHTML =
+        '<div class="err">SIN CONEXIÓN</div><div class="msg" style="margin-top:6px;">REINTENTANDO...</div>';
+      setTimeout(loadWeather, 60000);
+    };
+    xhr.send();
   }
-
   loadWeather();
-  // Refrescar clima cada 10 minutos
   setInterval(loadWeather, 600000);
 </script>
 </body>
