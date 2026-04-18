@@ -3,7 +3,7 @@
   "short_name": "CASIO",
   "description": "Reloj mundial con clima y días festivos",
   "start_url": "/",
-  "display": "standalone",
+  "display": "fullscreen",
   "orientation": "landscape",
   "background_color": "#070C12",
   "theme_color": "#070C12",
