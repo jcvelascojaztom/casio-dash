@@ -14,75 +14,128 @@
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <style>
+    /* ── CSS VARIABLES POR TEMA ── */
+    :root {
+      --bg-body:    #0A0A08;
+      --bg-watch:   #141F0C;
+      --border:     #3A5220;
+      --border-dim: #1E2E10;
+      --fg-bright:  #B8D870;
+      --fg-mid:     #527030;
+      --fg-dim:     #4A6228;
+      --ghost:      #1E2E10;
+    }
+    body.theme-blue {
+      --bg-body:    #080810;
+      --bg-watch:   #0C0C20;
+      --border:     #203A52;
+      --border-dim: #101E2E;
+      --fg-bright:  #70B8D8;
+      --fg-mid:     #305270;
+      --fg-dim:     #284A62;
+      --ghost:      #101E2E;
+    }
+    body.theme-mono {
+      --bg-body:    #080808;
+      --bg-watch:   #111111;
+      --border:     #444444;
+      --border-dim: #222222;
+      --fg-bright:  #EEEEEE;
+      --fg-mid:     #777777;
+      --fg-dim:     #555555;
+      --ghost:      #1E1E1E;
+    }
+
     * { margin:0; padding:0; box-sizing:border-box; }
-    html, body { width:100%; height:100%; overflow:hidden; background:#0A0A08; }
+    html, body { width:100%; height:100%; overflow:hidden; background:var(--bg-body); transition: background 0.3s; }
     body { display:flex; align-items:center; justify-content:center; font-family:'Share Tech Mono', monospace; }
 
     .watch {
       width:92vw; height:88vh;
-      border:3px solid #3A5220; border-radius:8px;
-      background:#141F0C; position:relative; display:flex; flex-direction:column; overflow:hidden;
+      border:3px solid var(--border); border-radius:8px;
+      background:var(--bg-watch); position:relative; display:flex; flex-direction:column; overflow:hidden;
+      transition: background 0.3s, border-color 0.3s;
     }
     .header {
       padding:8px 20px; display:flex; justify-content:space-between; align-items:center;
-      border-bottom:1px solid #1E2E10; color:#527030; font-size:14px; letter-spacing:2px;
+      border-bottom:1px solid var(--border-dim); color:var(--fg-mid); font-size:14px; letter-spacing:2px;
     }
     .modes button {
-      background:none; border:1px solid #1E2E10; color:#4A6228; padding:4px 10px; margin-left:6px; font-size:12px; cursor:pointer;
+      background:none; border:1px solid var(--border-dim); color:var(--fg-dim);
+      padding:4px 10px; margin-left:6px; font-size:12px; cursor:pointer;
+      font-family:'Share Tech Mono', monospace; transition: color 0.2s, border-color 0.2s;
     }
-    .modes button.active { color:#B8D870; border-color:#B8D870; }
+    .modes button.active { color:var(--fg-bright); border-color:var(--fg-bright); }
 
     .time-block {
-      flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; border-bottom:1px solid #1E2E10;
+      flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+      border-bottom:1px solid var(--border-dim);
+    }
+    .lcd-wrapper { position:relative; display:inline-block; }
+    .ghost {
+      font-family:'DSEG7', monospace;
+      font-size:18vw; letter-spacing:4px; color:var(--ghost);
+      position:absolute; top:0; left:0; user-select:none; pointer-events:none;
     }
     .lcd {
       font-family:'DSEG7', monospace;
-      font-size:18vw; letter-spacing:4px; color:#B8D870;
-      text-shadow:0 0 20px rgba(184,216,112,0.6);
-    }
-    .ghost {
-      position:absolute; font-family:'DSEG7', monospace; font-size:18vw; letter-spacing:4px; color:#1E2E10; opacity:0.6;
+      font-size:18vw; letter-spacing:4px; color:var(--fg-bright);
+      text-shadow:0 0 20px rgba(184,216,112,0.5);
+      position:relative; z-index:1;
+      transition: color 0.3s, text-shadow 0.3s;
     }
     .sep { animation: blink 1s infinite; }
     @keyframes blink { 50% { opacity: 0.2; } }
 
     .date {
-      margin-top:20px; font-size:28px; color:#B8D870; letter-spacing:3px;
+      margin-top:20px; font-size:28px; color:var(--fg-bright); letter-spacing:3px;
     }
-
-    .bottom { display:flex; flex:1; }
+    .bottom { display:flex; flex:1; min-height:0; }
     .panel {
-      flex:1; padding:15px 25px; border-right:1px solid #1E2E10;
+      flex:1; padding:15px 25px; border-right:1px solid var(--border-dim); overflow:hidden;
     }
     .panel:last-child { border-right:none; }
     .panel-label {
-      font-size:13px; letter-spacing:2px; color:#527030; margin-bottom:8px; border-bottom:1px solid #1E2E10; padding-bottom:4px;
+      font-size:13px; letter-spacing:2px; color:var(--fg-mid);
+      margin-bottom:8px; border-bottom:1px solid var(--border-dim); padding-bottom:4px;
     }
     .temp {
-      font-family:'DSEG7', monospace; font-size:80px; color:#B8D870; line-height:1;
+      font-family:'DSEG7', monospace; font-size:72px; color:var(--fg-bright); line-height:1;
+      transition: color 0.3s;
     }
-    .msg { color:#4A6228; font-size:15px; letter-spacing:1px; }
+    .msg { color:var(--fg-dim); font-size:14px; letter-spacing:1px; line-height:1.8; }
+    .weather-row { margin-top:8px; }
+    .weather-item { color:var(--fg-mid); font-size:13px; letter-spacing:1px; }
+    .err { color:#7A3020; font-size:13px; letter-spacing:1px; }
+
+    /* Agenda */
+    .event-item {
+      border-left: 2px solid var(--fg-dim);
+      padding: 3px 0 3px 10px;
+      margin-bottom: 8px;
+    }
+    .event-time { color:var(--fg-mid); font-size:12px; letter-spacing:1px; }
+    .event-title { color:var(--fg-bright); font-size:13px; letter-spacing:1px; }
   </style>
 </head>
-<body>
-
+<body class="theme-green">
 <div class="watch">
   <div class="header">
     <div>● CASIO · WORLD TIME</div>
     <div id="seconds">00</div>
     <div class="modes">
       <button onclick="setTheme('green')" id="btn-green" class="active">GRN</button>
-      <button onclick="setTheme('blue')" id="btn-blue">BLU</button>
-      <button onclick="setTheme('mono')" id="btn-mono">B&W</button>
+      <button onclick="setTheme('blue')"  id="btn-blue">BLU</button>
+      <button onclick="setTheme('mono')"  id="btn-mono">B&W</button>
     </div>
   </div>
 
   <div class="time-block">
-    <div style="position:relative;">
-      <div class="ghost" id="ghost">88:88</div>
-      <div class="lcd" id="time">19:45</div>
+    <div class="lcd-wrapper">
+      <div class="ghost">88:88</div>
+      <div class="lcd" id="time">00:00</div>
     </div>
-    <div class="date" id="date">SÁB 18-ABR-2026</div>
+    <div class="date" id="date">--- --/--/----</div>
   </div>
 
   <div class="bottom">
@@ -98,31 +151,102 @@
 </div>
 
 <script>
+  /* ── CONSTANTES ── */
   var LAT = 19.0414;
   var LON = -98.2063;
+  var DIAS  = ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
+  var MESES = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
 
   function pad(n) { return n < 10 ? '0' + n : n; }
 
+  /* ── RELOJ ── */
   function updateClock() {
     var now = new Date();
-    document.getElementById('time').textContent = pad(now.getHours()) + ':' + pad(now.getMinutes());
+    document.getElementById('time').innerHTML =
+      pad(now.getHours()) + '<span class="sep">:</span>' + pad(now.getMinutes());
     document.getElementById('seconds').textContent = pad(now.getSeconds());
-    document.getElementById('date').textContent = 
-      ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'][now.getDay()] + ' ' +
-      pad(now.getDate()) + '-ABR-2026';   // simplificado para hoy
+    document.getElementById('date').textContent =
+      DIAS[now.getDay()] + ' ' +
+      pad(now.getDate()) + '-' + MESES[now.getMonth()] + '-' + now.getFullYear();
   }
-
-  function setTheme(theme) {
-    document.querySelectorAll('.modes button').forEach(b => b.classList.remove('active'));
-    document.getElementById('btn-' + theme).classList.add('active');
-  }
-
-  // Inicializar
   updateClock();
   setInterval(updateClock, 1000);
 
-  // Clima y agenda se cargan desde el backend de Vercel
-  // (si no cargan, aparecerá el mensaje de loading)
+  /* ── TEMAS ── */
+  function setTheme(theme) {
+    document.querySelectorAll('.modes button').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById('btn-' + theme).classList.add('active');
+    document.body.className = 'theme-' + theme;
+  }
+
+  /* ── CLIMA (Open-Meteo, sin API key) ── */
+  var WMO = {
+    0:'DESPEJADO', 1:'CASI DESPEJADO', 2:'PARCIALMENTE NUBLADO', 3:'NUBLADO',
+    45:'NEBLINA', 48:'NEBLINA CON HIELO',
+    51:'LLOVIZNA LIGERA', 53:'LLOVIZNA', 55:'LLOVIZNA INTENSA',
+    61:'LLUVIA LIGERA', 63:'LLUVIA', 65:'LLUVIA INTENSA',
+    71:'NIEVE LIGERA', 73:'NIEVE', 75:'NIEVE INTENSA',
+    80:'CHUBASCOS', 81:'CHUBASCOS FUERTES', 82:'CHUBASCOS VIOLENTOS',
+    95:'TORMENTA', 96:'TORMENTA CON GRANIZO', 99:'TORMENTA FUERTE'
+  };
+
+  function loadWeather() {
+    var url = 'https://api.open-meteo.com/v1/forecast' +
+      '?latitude=' + LAT +
+      '&longitude=' + LON +
+      '&current=temperature_2m,apparent_temperature,weathercode,windspeed_10m,relative_humidity_2m' +
+      '&daily=temperature_2m_max,temperature_2m_min,weathercode' +
+      '&timezone=America%2FMexico_City' +
+      '&forecast_days=3';
+
+    fetch(url)
+      .then(function(r){
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function(data){
+        var c = data.current;
+        var d = data.daily;
+        var code = c.weathercode;
+        var desc = WMO[code] || 'COD:' + code;
+
+        var html = '<div class="temp">' + Math.round(c.temperature_2m) + '°</div>';
+        html += '<div class="weather-row">';
+        html += '<div class="weather-item">ST: ' + Math.round(c.apparent_temperature) + '°C  HUM: ' + c.relative_humidity_2m + '%</div>';
+        html += '<div class="weather-item">VIENTO: ' + Math.round(c.windspeed_10m) + ' KM/H</div>';
+        html += '<div class="weather-item">' + desc + '</div>';
+        html += '</div>';
+
+        // Pronóstico 3 días
+        if (d && d.time) {
+          html += '<div style="margin-top:10px;">';
+          for (var i = 0; i < Math.min(3, d.time.length); i++) {
+            var dt = new Date(d.time[i] + 'T12:00:00');
+            var dia = DIAS[dt.getDay()];
+            var wc  = WMO[d.weathercode[i]] || '';
+            html += '<div class="weather-item">' +
+              dia + ' ' +
+              Math.round(d.temperature_2m_min[i]) + '/' +
+              Math.round(d.temperature_2m_max[i]) + '°  ' +
+              wc.substring(0,14) +
+              '</div>';
+          }
+          html += '</div>';
+        }
+
+        document.getElementById('weather').innerHTML = html;
+      })
+      .catch(function(err){
+        document.getElementById('weather').innerHTML =
+          '<div class="err">ERROR: ' + err.message + '</div>' +
+          '<div class="msg" style="margin-top:6px;">REINTENTANDO...</div>';
+        setTimeout(loadWeather, 30000);
+      });
+  }
+
+  loadWeather();
+  // Refrescar clima cada 10 minutos
+  setInterval(loadWeather, 600000);
 </script>
 </body>
 </html>
