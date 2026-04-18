@@ -87,9 +87,6 @@
     .sep { animation: blink 1s infinite; }
     @keyframes blink { 50% { opacity: 0.2; } }
 
-    .date {
-      margin-top:20px; font-size:28px; color:var(--fg-bright); letter-spacing:3px;
-    }
     .bottom { display:flex; flex:1; min-height:0; }
     .panel {
       flex:1; padding:15px 25px; border-right:1px solid var(--border-dim); overflow:hidden;
@@ -108,14 +105,19 @@
     .weather-item { color:var(--fg-mid); font-size:13px; letter-spacing:1px; }
     .err { color:#7A3020; font-size:13px; letter-spacing:1px; }
 
-    /* Agenda */
-    .event-item {
-      border-left: 2px solid var(--fg-dim);
-      padding: 3px 0 3px 10px;
-      margin-bottom: 8px;
+    /* Fecha grande */
+    .date-display {
+      font-size:26px; color:var(--fg-bright); letter-spacing:3px; margin-bottom:14px;
     }
-    .event-time { color:var(--fg-mid); font-size:12px; letter-spacing:1px; }
-    .event-title { color:var(--fg-bright); font-size:13px; letter-spacing:1px; }
+    /* Días festivos */
+    .festivo-item {
+      border-left: 2px solid var(--fg-dim);
+      padding: 4px 0 4px 10px;
+      margin-bottom: 10px;
+    }
+    .festivo-fecha { color:var(--fg-mid); font-size:12px; letter-spacing:1px; }
+    .festivo-nombre { color:var(--fg-bright); font-size:13px; letter-spacing:1px; line-height:1.4; }
+    .festivo-dias { color:var(--fg-dim); font-size:11px; letter-spacing:1px; margin-top:1px; }
   </style>
 </head>
 <body class="theme-green">
@@ -135,7 +137,6 @@
       <div class="ghost">88:88</div>
       <div class="lcd" id="time">00:00</div>
     </div>
-    <div class="date" id="date">--- --/--/----</div>
   </div>
 
   <div class="bottom">
@@ -144,8 +145,8 @@
       <div id="weather"><div class="msg">CARGANDO CLIMA...</div></div>
     </div>
     <div class="panel">
-      <div class="panel-label">■ AGENDA — PRÓXIMOS 7 DÍAS</div>
-      <div id="agenda"><div class="msg">NO EVENTS_</div></div>
+      <div class="panel-label">■ FECHA Y DÍAS FESTIVOS</div>
+      <div id="festivos"></div>
     </div>
   </div>
 </div>
@@ -165,12 +166,79 @@
     document.getElementById('time').innerHTML =
       pad(now.getHours()) + '<span class="sep">:</span>' + pad(now.getMinutes());
     document.getElementById('seconds').textContent = pad(now.getSeconds());
-    document.getElementById('date').textContent =
-      DIAS[now.getDay()] + ' ' +
-      pad(now.getDate()) + '-' + MESES[now.getMonth()] + '-' + now.getFullYear();
   }
   updateClock();
   setInterval(updateClock, 1000);
+
+  /* ── DÍAS FESTIVOS MÉXICO 2026-2027 (oficiales + SEP) ── */
+  var FESTIVOS = [
+    // 2026
+    { fecha: '2026-01-01', nombre: 'AÑO NUEVO' },
+    { fecha: '2026-02-02', nombre: 'DÍA DE LA CANDELARIA' },
+    { fecha: '2026-02-05', nombre: 'DÍA DE LA CONSTITUCIÓN' },
+    { fecha: '2026-03-16', nombre: 'NATALICIO DE BENITO JUÁREZ' },
+    { fecha: '2026-04-02', nombre: 'JUEVES SANTO' },
+    { fecha: '2026-04-03', nombre: 'VIERNES SANTO' },
+    { fecha: '2026-05-01', nombre: 'DÍA DEL TRABAJO' },
+    { fecha: '2026-05-10', nombre: 'DÍA DE LAS MADRES' },
+    { fecha: '2026-09-16', nombre: 'DÍA DE LA INDEPENDENCIA' },
+    { fecha: '2026-11-02', nombre: 'DÍA DE MUERTOS' },
+    { fecha: '2026-11-16', nombre: 'REVOLUCIÓN MEXICANA' },
+    { fecha: '2026-12-12', nombre: 'DÍA DE LA VIRGEN DE GUADALUPE' },
+    { fecha: '2026-12-25', nombre: 'NAVIDAD' },
+    // 2027
+    { fecha: '2027-01-01', nombre: 'AÑO NUEVO' },
+    { fecha: '2027-02-05', nombre: 'DÍA DE LA CONSTITUCIÓN' },
+    { fecha: '2027-03-21', nombre: 'NATALICIO DE BENITO JUÁREZ' },
+    { fecha: '2027-03-25', nombre: 'JUEVES SANTO' },
+    { fecha: '2027-03-26', nombre: 'VIERNES SANTO' },
+    { fecha: '2027-05-01', nombre: 'DÍA DEL TRABAJO' },
+    { fecha: '2027-05-10', nombre: 'DÍA DE LAS MADRES' },
+    { fecha: '2027-09-16', nombre: 'DÍA DE LA INDEPENDENCIA' },
+    { fecha: '2027-11-02', nombre: 'DÍA DE MUERTOS' },
+    { fecha: '2027-11-15', nombre: 'REVOLUCIÓN MEXICANA' },
+    { fecha: '2027-12-12', nombre: 'DÍA DE LA VIRGEN DE GUADALUPE' },
+    { fecha: '2027-12-25', nombre: 'NAVIDAD' }
+  ];
+
+  function renderFestivos() {
+    var now   = new Date();
+    var hoy   = now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate());
+    var diaHoy = DIAS[now.getDay()];
+    var mesHoy = MESES[now.getMonth()];
+
+    // Fecha actual grande
+    var html = '<div class="date-display">' +
+      diaHoy + ' ' + pad(now.getDate()) + '-' + mesHoy + '-' + now.getFullYear() +
+      '</div>';
+
+    // Próximos 3 festivos desde hoy (inclusive si hoy es festivo)
+    var proximos = FESTIVOS.filter(function(f){ return f.fecha >= hoy; }).slice(0, 3);
+
+    proximos.forEach(function(f) {
+      var parts = f.fecha.split('-');
+      var fd = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+      var diffMs   = fd - new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      var diffDias = Math.round(diffMs / 86400000);
+      var etiqueta = diffDias === 0 ? '¡HOY!' :
+                     diffDias === 1 ? 'MAÑANA' :
+                     'EN ' + diffDias + ' DÍAS';
+      var diaFest  = DIAS[fd.getDay()];
+      var mesFest  = MESES[fd.getMonth()];
+
+      html += '<div class="festivo-item">' +
+        '<div class="festivo-fecha">' + diaFest + ' ' + pad(fd.getDate()) + '-' + mesFest + '-' + fd.getFullYear() + '</div>' +
+        '<div class="festivo-nombre">' + f.nombre + '</div>' +
+        '<div class="festivo-dias">' + etiqueta + '</div>' +
+        '</div>';
+    });
+
+    document.getElementById('festivos').innerHTML = html;
+  }
+
+  renderFestivos();
+  // Actualizar al cambiar de día (medianoche)
+  setInterval(renderFestivos, 60000);
 
   /* ── TEMAS ── */
   function setTheme(theme) {
